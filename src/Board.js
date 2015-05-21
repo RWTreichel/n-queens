@@ -51,6 +51,9 @@
     },
 
     hasAnyQueensConflicts: function() {
+      if (this.get('n') === 0) {
+        return false;
+      }
       return this.hasAnyRooksConflicts() || this.hasAnyMajorDiagonalConflicts() || this.hasAnyMinorDiagonalConflicts();
     },
 
@@ -59,6 +62,15 @@
         0 <= rowIndex && rowIndex < this.get('n') &&
         0 <= colIndex && colIndex < this.get('n')
       );
+    },
+
+    _numPieces: function() {
+      // Return the number of pieces on the entire board.
+      return _.reduce(this.rows(), function(memo, row) {
+        return memo + _.reduce(row, function(memo, cell) {
+          return memo + cell;
+        }, 0);
+      }, 0);
     },
 
 

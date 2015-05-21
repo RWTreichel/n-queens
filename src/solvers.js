@@ -12,7 +12,6 @@
 
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
-
 window.findNRooksSolution = function(n) {
   var solution;
   var rooksSoFar = 0;
@@ -38,97 +37,120 @@ window.findNRooksSolution = function(n) {
   return solution;
 };
 
-
-
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
   var solutionCount = 0;
-  var board = new Board({n : n});
+  var startBoard = new Board({n: n});
 
-  var nRooksRecurse = function(solCountSofar, numRooks, rowIndex, colIndex) {
-     // else {
-      if (!board.get(rowIndex)[colIndex]) {
-        board.togglePiece(rowIndex, colIndex);
-        if (!board.hasAnyRooksConflicts()) {
-          numRooks++;
-          if (numRooks === n) {
-            solutionCount++;// = solCountSofar + 1;
-            return;
-          }
+  var nRooksRecurse = function(board, i) {
+    // For each space on the i-th row...
+    for (var j = 0; j < n; j++) {
 
-          for (var i = 0; i < n; i++) {
-            for (var j = 0; j < n; j++) {
-              if (!(i === rowIndex && j === colIndex)) {
-                nRooksRecurse(solCountSofar, numRooks, i, j);
-              }
-            }
-          }
+      // If the space is not occupied...
+      if (board.get(i)[j] === 0) {
+
+        // Place a piece on the space.
+        board.togglePiece(i, j);
+
+        if ( board.hasAnyRooksConflicts() ) {
+
+          // If the new piece causes a conflict, take it back
+          // and do nothing.
+          board.togglePiece(i, j);
+
+        } else if ( board._numPieces() === n ){
+
+          // Else if the new piece completes the board,
+          // increment solutionCount.
+          solutionCount++;
+          board.togglePiece(i, j);
+
         } else {
-          board.togglePiece(rowIndex, colIndex);
+
+          // Else, we recurse on a new board that includes
+          // this new piece, starting the process again.
+          nRooksRecurse( board, i + 1);
+          board.togglePiece(i, j);
         }
       }
-    // }
+    }
   };
-  nRooksRecurse(solutionCount, 0, 0, 0);
-  // Attempt to find a solution using findNRooksSolution
-    // If a valid solution is found,
-      // Increment solutionCount
-      // Loop back, and try to find more solutions
-    // If no solution is found,
 
-
+  nRooksRecurse(startBoard, 0);
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
 
-// window.countNRooksSolutions = function(n) {
-//   var solutionCount = 0;
-//   var board = new Board({n : n});
-//   var permutations = 
-//
-//   var nRooksRecurse = function(solCountSofar, numRooks, rowIndex, colIndex) {
-//      // else {
-//       if (!board.get(rowIndex)[colIndex]) {
-//         board.togglePiece(rowIndex, colIndex);
-//         if (!board.hasAnyRooksConflicts()) {
-//           numRooks++;
-//           if (numRooks === n) {
-//             solutionCount++;// = solCountSofar + 1;
-//             return;
-//           }
-
-//           for (var i = 0; i < n; i++) {
-//             for (var j = 0; j < n; j++) {
-//               if (!(i === rowIndex && j === colIndex)) {
-//                 nRooksRecurse(solCountSofar, numRooks, i, j);
-//               }
-//             }
-//           }
-//         } else {
-//           board.togglePiece(rowIndex, colIndex);
-//         }
-//       }
-//     // }
-//   };
-//   nRooksRecurse(solutionCount, 0, 0, 0);
-//   // Attempt to find a solution using findNRooksSolution
-//     // If a valid solution is found,
-//       // Increment solutionCount
-//       // Loop back, and try to find more solutions
-//     // If no solution is found,
-
-
-
-//   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-//   return solutionCount;
-// };
-
-
-
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  // var solution = [];
+  // var board = new Board({n: n});
+
+  // var nQueensRecurse = function(board, i) {
+  //   // For each space on the i-th row...
+  //   for (var j = 0; j < n; j++) {
+
+  //     // If the space is not occupied...
+  //     if (board.get(i)[j] === 0) {
+
+  //       // Place a piece on the space.
+  //       board.togglePiece(i, j);
+
+  //       if ( board.hasAnyQueensConflicts() ) {
+
+  //         // If the new piece causes a conflict, take it back
+  //         // and do nothing.
+  //         board.togglePiece(i, j);
+
+  //       } else if ( board._numPieces() === n ){
+  //         console.log(board);
+  //         // Else if the new piece completes the board,
+  //         // increment solutionCount.
+  //         if ( Array.isArray(solution) ) {
+  //           solution = board.rows();
+  //         }
+
+  //         // board.togglePiece(i, j);
+
+  //       } else {
+
+  //         // Else, we recurse on a new board that includes
+  //         // this new piece, starting the process again.
+  //         nQueensRecurse( board, i + 1);
+  //         board.togglePiece(i, j);
+  //       }
+  //     }
+  //   }
+  // };
+
+  // if (n === 0) {
+  //   return [];
+  // }
+
+  // nQueensRecurse(board, 0);
+
+  // console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  // return solution;
+  var permutations = permutate(n);
+  var solution;
+  var board = new Board({n : n});
+  var solutionBoard = new Board({n : n});
+  solution = solutionBoard.rows();
+
+  for (var p = 0; p < permutations.length; p++) {
+    var current = permutations[p];
+    var rowIndex = 0;
+    for (var j = 0; j < n; j++) {
+      board.togglePiece(rowIndex, current[j]);
+      rowIndex++;
+    }
+    if (!board.hasAnyQueensConflicts()) {
+      solution = board.rows();
+      return solution;
+    }
+    board = new Board({n : n});
+  }
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
@@ -137,8 +159,78 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0;
+  var startBoard = new Board({n: n});
+
+  var nQueensRecurse = function(board, i) {
+    // For each space on the i-th row...
+    for (var j = 0; j < n; j++) {
+
+      // If the space is not occupied...
+      if (board.get(i)[j] === 0) {
+
+        // Place a piece on the space.
+        board.togglePiece(i, j);
+
+        if ( board.hasAnyQueensConflicts() ) {
+
+          // If the new piece causes a conflict, take it back
+          // and do nothing.
+          board.togglePiece(i, j);
+
+        } else if ( board._numPieces() === n ){
+
+          // Else if the new piece completes the board,
+          // increment solutionCount.
+          solutionCount++;
+          board.togglePiece(i, j);
+
+        } else {
+
+          // Else, we recurse on a new board that includes
+          // this new piece, starting the process again.
+          nQueensRecurse( board, i + 1);
+          board.togglePiece(i, j);
+        }
+      }
+    }
+  };
+
+  if (n === 0) {
+    return 1;
+  } 
+
+  nQueensRecurse(startBoard, 0);
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
+};
+
+
+window.permutate = function(n) {
+  var range = _.range(n);
+
+  var outcomes = [];
+  var playedSoFar = [];
+  // var plays = ['rock','paper','scissors'];
+
+  var combos = function(roundsToGo) {
+    if (roundsToGo === 0) {
+      outcomes.push(playedSoFar.slice(0));
+      return;
+    }
+
+    for (var i = 0; i < range.length; i++) {
+      var temp = range[i];
+      playedSoFar.push(temp);
+      range.splice(i, 1);
+      combos(roundsToGo - 1);
+      range.splice(i, 0, temp);
+      playedSoFar.pop();
+    }
+    return;
+  }
+
+  combos(n);
+  return outcomes;
 };
