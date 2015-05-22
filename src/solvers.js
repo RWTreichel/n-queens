@@ -84,54 +84,6 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  // var solution = [];
-  // var board = new Board({n: n});
-
-  // var nQueensRecurse = function(board, i) {
-  //   // For each space on the i-th row...
-  //   for (var j = 0; j < n; j++) {
-
-  //     // If the space is not occupied...
-  //     if (board.get(i)[j] === 0) {
-
-  //       // Place a piece on the space.
-  //       board.togglePiece(i, j);
-
-  //       if ( board.hasAnyQueensConflicts() ) {
-
-  //         // If the new piece causes a conflict, take it back
-  //         // and do nothing.
-  //         board.togglePiece(i, j);
-
-  //       } else if ( board._numPieces() === n ){
-  //         console.log(board);
-  //         // Else if the new piece completes the board,
-  //         // increment solutionCount.
-  //         if ( Array.isArray(solution) ) {
-  //           solution = board.rows();
-  //         }
-
-  //         // board.togglePiece(i, j);
-
-  //       } else {
-
-  //         // Else, we recurse on a new board that includes
-  //         // this new piece, starting the process again.
-  //         nQueensRecurse( board, i + 1);
-  //         board.togglePiece(i, j);
-  //       }
-  //     }
-  //   }
-  // };
-
-  // if (n === 0) {
-  //   return [];
-  // }
-
-  // nQueensRecurse(board, 0);
-
-  // console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  // return solution;
   var permutations = permutate(n);
   var solution;
   var board = new Board({n : n});
@@ -165,41 +117,34 @@ window.countNQueensSolutions = function(n) {
   var nQueensRecurse = function(board, i) {
     // For each space on the i-th row...
     for (var j = 0; j < n; j++) {
+      // Place a piece on the space.
+      board.togglePiece(i, j);
 
-      // If the space is not occupied...
-      if (board.get(i)[j] === 0) {
-
-        // Place a piece on the space.
-        board.togglePiece(i, j);
-
-        if ( board.hasAnyQueensConflicts() ) {
-
-          // If the new piece causes a conflict, take it back
-          // and do nothing.
-          board.togglePiece(i, j);
-
-        } else if ( board._numPieces() === n ){
-
-          // Else if the new piece completes the board,
-          // increment solutionCount.
+      // If the new piece does not cause any conflicts...
+      if ( !board.hasAnyQueensConflicts() ) {
+        // If the new piece completes the board,
+        // increment solutionCount.
+        if ( board._numPieces() === n ){
           solutionCount++;
-          board.togglePiece(i, j);
-
         } else {
-
           // Else, we recurse on a new board that includes
           // this new piece, starting the process again.
-          nQueensRecurse( board, i + 1);
-          board.togglePiece(i, j);
+          nQueensRecurse( board, i + 1 );
         }
       }
+      
+      // Take the piece back in order to test a
+      // different space within the row.
+      board.togglePiece(i, j);
     }
   };
 
+  // A 0x0 board has one solution according to HR
   if (n === 0) {
     return 1;
   } 
 
+  // Begin the recursion process
   nQueensRecurse(startBoard, 0);
 
   console.log('Number of solutions for ' + n + ' queens:', solutionCount);
@@ -212,7 +157,6 @@ window.permutate = function(n) {
 
   var outcomes = [];
   var playedSoFar = [];
-  // var plays = ['rock','paper','scissors'];
 
   var combos = function(roundsToGo) {
     if (roundsToGo === 0) {
